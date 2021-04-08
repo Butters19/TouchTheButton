@@ -2,7 +2,9 @@ package com.example.touchthebutton;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.ContentValues;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -15,13 +17,18 @@ import java.util.GregorianCalendar;
 
 public class MainActivity extends AppCompatActivity {
     ClickModel model;
+    DBHelper dbHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         model = new ClickModel();
+        dbHelper = new DBHelper(this);
         setContentView(R.layout.activity_main);
 
+        SQLiteDatabase database = dbHelper.getWritableDatabase();
+
+        ContentValues contentValues = new ContentValues();
         findViewById(R.id.info_Button).setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, SecondActivity.class);
             intent.putStringArrayListExtra("key", model.list);
@@ -30,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
 
         findViewById(R.id.result_Button).setOnClickListener(v -> {
             model.list.add(getCurrentDate());
+            contentValues.put(DBHelper.KEY_TIME, getCurrentDate());
             setValueToFiled(findViewById(R.id.counterTitle),"Count of click:");
             setValueToFiled(findViewById(R.id.counterTextView),String.valueOf(model.list.size()));
             setValueToFiled(findViewById(R.id.lastDateTitle),"Last click date:");
